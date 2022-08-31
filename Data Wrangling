@@ -1,0 +1,84 @@
+library(readxl)
+library(mice)
+library(missForest)
+library(mi)
+library(Hmisc)
+
+supply_chain_data <- read_excel("Project_data_Supply chain.xlsx")
+summary(supply_chain_data)
+
+#remove variables Id, Inventory, Finished Goods, WIP, Raw Material, PPE
+supply_chain_data_2<- supply_chain_data[ , -c(1, 13:21, 31:64, 74:82)]
+head(supply_chain_data_2)
+
+# Converting all character variables from cateogrical to numeric
+char_columns <- sapply(supply_chain_data_2, is.character)             # Identify character columns
+data_chars_as_num <- supply_chain_data_2                         # Replicate data
+data_chars_as_num[ , char_columns] <- as.data.frame(   # Recode characters as numeric
+  apply(data_chars_as_num[ , char_columns], 2, as.numeric))
+sapply(data_chars_as_num, class)                       # Print classes of all colums
+
+# remove Company.x and equity.x (first 2 columns)
+supplychaindatafinal <- data_chars_as_num[ , -c(1,2)]
+summary(supplychaindatafinal)
+
+# remove companies which have missing values but not at random
+supplychaindatafinal <- supplychaindatafinal[-c(8,53,181,234,256,291,293,387,420,476, 504), ]
+summary(supplychaindatafinal)
+
+# computing NA values at random using HMISC library 
+supplychaindatafinal$ROA_Sep.18 <- with(supplychaindatafinal, impute(ROA_Sep.18, "random"))
+supplychaindatafinal$ROA_Dec.18 <- with(supplychaindatafinal, impute(ROA_Dec.18, "random"))
+supplychaindatafinal$ROA_Mar.19 <- with(supplychaindatafinal, impute(ROA_Mar.19, "random"))
+supplychaindatafinal$ROA_Jun.19 <- with(supplychaindatafinal, impute(ROA_Jun.19, "random"))
+supplychaindatafinal$ROA_Sep.19 <- with(supplychaindatafinal, impute(ROA_Sep.19, "random"))
+supplychaindatafinal$ROA_Dec.19 <- with(supplychaindatafinal, impute(ROA_Dec.19, "random"))
+supplychaindatafinal$ROA_Mar.20 <- with(supplychaindatafinal, impute(ROA_Mar.20, "random"))
+supplychaindatafinal$ROA_Jun.20 <- with(supplychaindatafinal, impute(ROA_Jun.20, "random"))
+supplychaindatafinal$ROA_Sep.20 <- with(supplychaindatafinal, impute(ROA_Sep.20, "random"))
+
+supplychaindatafinal$Hitorical.Market.Cap_Sep.18 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Sep.18, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Dec.18 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Dec.18, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Mar.19 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Mar.19, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Jun.19 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Jun.19, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Sep.19 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Sep.19, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Dec.19 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Dec.19, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Mar.20 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Mar.20, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Jun.20 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Jun.20, "random"))
+supplychaindatafinal$Hitorical.Market.Cap_Sep.20 <- with(supplychaindatafinal, impute(Hitorical.Market.Cap_Sep.20, "random"))
+
+supplychaindatafinal$Sales_revenue_Sep.18 <- with(supplychaindatafinal, impute(Sales_revenue_Sep.18, "random"))
+supplychaindatafinal$Sales_revenue_Dec.18 <- with(supplychaindatafinal, impute(Sales_revenue_Dec.18, "random"))
+supplychaindatafinal$Sales_revenue_Mar.19 <- with(supplychaindatafinal, impute(Sales_revenue_Mar.19, "random"))
+supplychaindatafinal$Sales_revenue_Jun.19 <- with(supplychaindatafinal, impute(Sales_revenue_Jun.19, "random"))
+supplychaindatafinal$Sales_revenue_Sep.19 <- with(supplychaindatafinal, impute(Sales_revenue_Sep.19, "random"))
+supplychaindatafinal$Sales_revenue_Dec.19 <- with(supplychaindatafinal, impute(Sales_revenue_Dec.19, "random"))
+supplychaindatafinal$Sales_revenue_Mar.20 <- with(supplychaindatafinal, impute(Sales_revenue_Mar.20, "random"))
+supplychaindatafinal$Sales_revenue_Jun.20 <- with(supplychaindatafinal, impute(Sales_revenue_Jun.20, "random"))
+supplychaindatafinal$Sales_revenue_Sep.20 <- with(supplychaindatafinal, impute(Sales_revenue_Sep.20, "random"))
+
+summary(supplychaindatafinal)
+
+head(supply_chain_data)
+head(supplychaindatafinal)
+
+supply_chain_data <- supply_chain_data[-c(8,53,181,234,256,291,293,387,420,476, 504), ]
+supply_chain_data_no_NAs <- cbind(supply_chain_data[ , c(2,3)], supplychaindatafinal)
+
+head(supply_chain_data_no_NAs)
+
+mean(supply_chain_data_no_NAs$ROA_Sep.18 : supply_chain_data_no_NAs$ROA_Dec.19)
+
+
+supply_chain_data_no_NAs$ROA_Pre_Covid <- rowMeans(supply_chain_data_no_NAs[ , c(3:8)])
+supply_chain_data_no_NAs$ROA_Post_Covid <- rowMeans(supply_chain_data_no_NAs[ , c(9:11)])
+
+supply_chain_data_no_NAs$Hitorical.Market.Cap_Pre_Covid <- rowMeans(supply_chain_data_no_NAs[ , c(12:17)])
+supply_chain_data_no_NAs$Hitorical.Market.Cap_Post_Covid <- rowMeans(supply_chain_data_no_NAs[ , c(18:20)])
+
+supply_chain_data_no_NAs$Sales_revenue_Pre_Covid <- rowMeans(supply_chain_data_no_NAs[ , c(21:26)])
+supply_chain_data_no_NAs$Sales_revenue_Post_Covid <- rowMeans(supply_chain_data_no_NAs[ , c(27:29)])
+
+supply_chain_df_final <- supply_chain_data_no_NAs[, -c(3:29)]
+head(supply_chain_df_final)
+
