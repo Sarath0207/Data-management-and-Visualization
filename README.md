@@ -10,14 +10,18 @@ capitalization within the supply chain sector.
 With the presence of supply chain data for the biggest 505 corporations and with the
 uncertainty of Covid-19’s financial impact on the supply chain sector, we perform
 explanatory analysis to identify Covid-19’s financial repercussions on these companies.
-● Explain and interpret Covid-19’s impact on companies’ revenues, ROA and market
-capitalization.
+
+● Explain and interpret Covid-19’s impact on companies’ revenues, ROA and market capitalization.
+
 ● Identify the best & worst performing companies prior to and after Covid-19’s impact.
 
 
 Group Members:
 
 Sarath
+
 Rithu
+
 Ziad
+
 JINGXUAN
